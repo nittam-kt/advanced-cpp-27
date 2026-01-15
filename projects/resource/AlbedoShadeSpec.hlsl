@@ -50,7 +50,7 @@ PSInput VS(VSInput vin)
     Out.posH = p;
 
     float3x3 world3x3 = (float3x3) world;
-    Out.nrmW = mul(world3x3, vin.nrm);
+    Out.nrmW = mul(vin.nrm, world3x3);
 
     Out.uv = vin.uv;
 

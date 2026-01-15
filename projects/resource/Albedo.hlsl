@@ -16,7 +16,7 @@ cbuffer CBPerCamera : register(b8)
 // オブジェクト定数バッファ
 cbuffer CBPerObject : register(b9)
 {
-    float4x4 world;
+    row_major float4x4 world;
 };
 
 // 頂点シェーダーへ入力するデータ

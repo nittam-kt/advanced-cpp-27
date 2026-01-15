@@ -311,7 +311,6 @@ namespace UniDx
 		float m30, m31, m32, m33;
 
 		static const Matrix4x4 identity;
-		static const Matrix4x4 zFlip;
 
 		Matrix4x4() : m00(0.f), m01(0.f), m02(0.f), m03(0.f),
 					  m10(0.f), m11(0.f), m12(0.f), m13(0.f),
@@ -377,7 +376,7 @@ namespace UniDx
 			const XMVECTOR X = XMVector3TransformNormal(v1, M);
 			return Vector3(X);
 		}
-		float Determinant() const noexcept
+		float determinant() const noexcept
 		{
 			return DirectX::XMVectorGetX(DirectX::XMMatrixDeterminant(XMLoad()));
 		}

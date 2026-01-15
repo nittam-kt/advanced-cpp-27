@@ -4,8 +4,8 @@
 // カメラ定数バッファ
 cbuffer CBPerCamera : register(b8)
 {
-    float4x4 view;
-    float4x4 projection;
+    row_major float4x4 view;
+    row_major float4x4 projection;
     float3   cameraPosW;
     float    cameraNear;
     float3   cameraForwardW;
@@ -16,7 +16,7 @@ cbuffer CBPerCamera : register(b8)
 // 行列定数バッファ
 cbuffer CBPerObject : register(b9)
 {
-    float4x4 world;
+    row_major float4x4 world;
 };
 
 // 頂点シェーダーへ入力するデータ

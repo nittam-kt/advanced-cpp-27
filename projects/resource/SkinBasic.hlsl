@@ -88,24 +88,30 @@ PSInput VS(VSInput vin)
     uint4 j = vin.joints;
     float4 w = vin.weights;
 
+    BoneMat3x4 bm;
+
     // ウェイト正規化
     float ws = w.x + w.y + w.z + w.w;
-    if (ws > 0) w /= ws;
-    else w = float4(1, 0, 0, 0);
-    BoneMat3x4 bm = BoneBlend4(bones[j.x], w.x, bones[j.y], w.y, bones[j.z], w.z, bones[j.w], w.w);
+    if (ws > 0)
+    {
+        w /= ws;
+        bm = BoneBlend4(bones[j.x], w.x, bones[j.y], w.y, bones[j.z], w.z, bones[j.w], w.w);
+    }
+    else
+    {
+        bm.r0 = float4(1, 0, 0, 0);
+        bm.r1 = float4(0, 1, 0, 0);
+        bm.r2 = float4(0, 0, 1, 0);
+    }
 
-    // ブレンド位置
+    // ブレンド位置、法線、接線xyz
     float3 skPos = BoneTransformPoint(vin.pos, bm);
-
-    // ブレンド法線
     float3 skNrm = BoneTransformVector(vin.nrm, bm);
-
-    // ブレンド接線 xyz
     float3 skTan = BoneTransformVector(vin.tangent.xyz, bm);
         
     float4 p = float4(skPos.xyz, 1);
-    p = mul(p, world);      // ワールド変換
-    Out.posW = (float3)p;
+    p = mul(p, world); // ワールド変換
+    Out.posW = (float3) p;
 
     p = mul(p, view); // ビュー変換
     p = mul(p, projection); // プロジェクション変換
@@ -113,7 +119,7 @@ PSInput VS(VSInput vin)
 
     float3x3 world3x3 = (float3x3) world;
 
-    float3 nW = mul(world3x3, skNrm);
+    float3 nW = mul(skNrm, world3x3);
     Out.nrmW = normalize((half3)nW);
 
     Out.uv = vin.uv0;

@@ -12,6 +12,13 @@ using namespace std;
 
 namespace {
 
+static const Matrix4x4 xFlipMtx = Matrix4x4(
+    -1.f, 0.f, 0.f, 0.f,
+    0.f, 1.f, 0.f, 0.f,
+    0.f, 0.f, 1.f, 0.f,
+    0.f, 0.f, 0.f, 1.f
+);
+
 // tinygltf::Accessor から std::span<T> でデータを取得するヘルパー
 template<typename T>
 void ReadAccessorData(
@@ -195,7 +202,7 @@ bool GltfModel::load_(const char* filePath, bool makeTextureMaterial, std::share
         auto mesh = make_shared<Mesh>();
         for (const auto& primitive : gltfMesh.primitives)
         {
-            auto sub = make_shared<SkinedSubMesh>();
+            auto sub = make_shared<SkinnedSubMesh>();
 
             // POSITION
             if (auto it = primitive.attributes.find("POSITION"); it != primitive.attributes.end()) {
@@ -370,7 +377,7 @@ bool GltfModel::load_(const char* filePath, bool makeTextureMaterial, std::share
                 // glTFは列優先行列で最初が１列、UniDxは行優先行列で最初が１行なので、結果的に順番コピーでOK
                 std::memcpy(&localRH, p, sizeof(float) * 16);
 
-                pair.second.inverseBind[i] = Matrix4x4::zFlip * localRH * Matrix4x4::zFlip;
+                pair.second.inverseBind[i] = xFlipMtx * localRH * xFlipMtx;
             }
         }
     }
@@ -490,7 +497,7 @@ void GltfModel::createNodeRecursive(const tinygltf::Model& model,
     }
 
     // RH -> LH 変換（行ベクトル規約でも同じ「C*M*C」でOK）
-    Matrix4x4 localLH = Matrix4x4::zFlip * localRH * Matrix4x4::zFlip;
+    Matrix4x4 localLH = xFlipMtx * localRH * xFlipMtx;
 
     Vector3 position;
     Vector3 scale;
